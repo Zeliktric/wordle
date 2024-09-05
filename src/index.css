@@ -1,13 +1,165 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/*########## COLOUR PALLETE ##########*/
+:root {
+    --black: #141204;
+    --green: #88D18A;
+    --orange: #EAC435;
+    --dark-grey: #2F2F2F;
+    --grey: #757780;
+    --red: #FB4D3D;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+    margin: 0;
+    background-color: var(--black);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*########## HEADER ##########*/
+
+header {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+header h1 {
+    padding: 0 1em;
+    border-bottom: 1px solid var(--grey);
+}
+
+/* Disables user selection (when you click and drag over text) for everything but the header */
+.main {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-text-select: none;
+    -webkit-user-select: none;
+}
+
+/*########## GUESS CONTAINER ##########*/
+
+.guessContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    cursor: default;
+}
+
+.guessRow {
+    display: flex;
+    gap: 0.5em;
+    transition: all 0.3s;
+}
+
+.guessLetter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--grey);
+    width: 4em;
+    height: 4em;
+
+    text-align: center;
+    color: white;
+    transition: transform 1s, background-color 0.5s;
+}
+
+.rotate {
+    transform: rotateY(180deg);
+}
+
+.rotate h1 {
+    transform: rotateY(-180deg);
+}
+
+.guessLetter h1 {
+    position: absolute;
+    text-transform: capitalize;
+    margin: 0;
+
+    transition-delay: 0.3s;
+}
+
+.correct {
+    background-color: var(--green) !important;
+    border: none;
+    width: 4.083125em;
+    height: 4.083125em;
+}
+
+.partial {
+    background-color: var(--orange) !important;
+    border: none;
+    width: 4.083125em;
+    height: 4.083125em;
+}
+
+.incorrect {
+    background-color: var(--dark-grey) !important;
+    border: none;
+    width: 4.083125em;
+    height: 4.083125em;
+}
+
+.error {
+    background-color: var(--red) !important;
+    border: none;
+    width: 4.083125em;
+    height: 4.083125em;
+}
+
+/*########## GUESS KEYBOARD ##########*/
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+
+    margin-top: 10em;
+}
+
+.keyRow {
+    display: flex;
+    gap: 0.5em;
+}
+
+.key {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--grey);
+    border-radius: 0.25em;
+    width: 3em;
+    height: 3.5em;
+
+    text-align: center;
+    color: white;
+    transition: all 0.1s;
+}
+
+.key:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.bigKey {
+    width: 4.5em;
+}
+
+.key h3, h4 {
+    position: absolute;
+    text-transform: capitalize;
+    margin: 0;
+}
+
+.icon {
+    font-size: 1.5em;
 }
