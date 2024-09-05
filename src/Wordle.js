@@ -43,7 +43,7 @@ export default function Wordle() {
 
         // Animated shake of the whole row together
         for(let x = 0; x < 6; x++) {
-            element.style.cssText = `transition: none; transform: translate(${x % 2 == 0 ? 2.5 : -2.5}px)`;
+            element.style.cssText = `transition: none; transform: translate(${x % 2 === 0 ? 2.5 : -2.5}px)`;
             await timer(50);
         }
 
@@ -63,7 +63,7 @@ export default function Wordle() {
 
         // Animated scale growth of the key letter
         for(let x = 0; x < 2; x++) {
-            element.style.cssText = `transition: 0.25s transform; transform: scale(${x == 0 ? 1.25 : 1})`;
+            element.style.cssText = `transition: 0.25s transform; transform: scale(${x === 0 ? 1.25 : 1})`;
             await timer(75);
         }
 
@@ -93,7 +93,7 @@ export default function Wordle() {
 
                     // Get class list of the keyboard letter
                     let keyboardLetter = document.getElementById(word.current[i]).classList;
-                    if(word.current[i] == theWord.current[i]) { // Check if current letter of user's word is in the right place
+                    if(word.current[i] === theWord.current[i]) { // Check if current letter of user's word is in the right place
                         // Set the background of the key letter to correct (green)
                         element.children[i].classList.add("correct");
                         
@@ -129,7 +129,7 @@ export default function Wordle() {
                 word.current = "";
 
                 // Check if the user has won
-                if(correct == 5) {
+                if(correct === 5) {
                     // Set the letter to a value outside of a-f so that they can no longer interact with the game
                     letter.current = "z";
 
@@ -147,7 +147,7 @@ export default function Wordle() {
         } else if(index.current < 4 && letters.indexOf(letter.current) < 6) { // Check if the user has pressed enter when they have entered less than 5 letters but still within the game
             for(let x = 0; x < 6; x++) {
                 // Animated shake of the whole row together
-                element.style.cssText = `transition: none; transform: translate(${x % 2 == 0 ? 2.5 : -2.5}px)`;
+                element.style.cssText = `transition: none; transform: translate(${x % 2 === 0 ? 2.5 : -2.5}px)`;
                 await timer(50);
             }
 
@@ -162,7 +162,7 @@ export default function Wordle() {
     // Function to check whether the key input is a letter
     const letterKey = (key) => {
         // Make sure that the user is having a valid go
-        if(key.match(/[a-z]/i) && index.current < 4 && letter.current != "z") {
+        if(key.match(/[a-z]/i) && index.current < 4 && letter.current !== "z") {
             // Force a re-render of the page
             setReRender(index.current);
 
@@ -177,7 +177,7 @@ export default function Wordle() {
 
     // Function to change the HTML element to the user's input letter
     const addLetter = () => {
-        if(document.getElementById(`${letter.current}${index.current}`) != null) {
+        if(document.getElementById(`${letter.current}${index.current}`) !== null) {
             document.getElementById(`${letter.current}${index.current}`).innerHTML = input.current;
             animateKey();
         }
@@ -186,7 +186,7 @@ export default function Wordle() {
     // Function to delete a key letter (backspace) from a row
     const deleteKey = () => {
         // Make sure that the user is having a valid go
-        if(index.current > -1 && letter.current != "z") {
+        if(index.current > -1 && letter.current !== "z") {
             // Force a re-render of the page
             setReRender(index.current);
 
@@ -201,7 +201,7 @@ export default function Wordle() {
     
     // Function to change the HTML element to blank
     const rmvLetter = () => {
-        if(document.getElementById(`${letter.current}${index.current}`) != null) {
+        if(document.getElementById(`${letter.current}${index.current}`) !== null) {
             document.getElementById(`${letter.current}${index.current}`).innerHTML = input.current;
             index.current--;
         }
@@ -235,7 +235,7 @@ export default function Wordle() {
             }
             
             // Check if the user pressed backspace
-            if(e.key == "Backspace") {
+            if(e.key === "Backspace") {
                 deleteKey();
             }
         }
