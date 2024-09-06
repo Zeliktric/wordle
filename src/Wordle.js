@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
 
 export default function Wordle() {
     //#region Variables
     // State to force a re-render whenever the user inputs a letter
     const [, setReRender] = useState(0);
+
+    const [restart, setRestart] = useState(null);
 
     // Letters to track which row the user is on
     const letters = ["a", "b", "c", "d", "e", "f"];
@@ -25,6 +27,9 @@ export default function Wordle() {
 
     // All the possible 5-letter combinations that are allowed (see words.txt)
     let words = useRef([]);
+
+    // The current state of the game
+    let state = useRef("");
     //#endregion
     
     // Sleep/delay function
@@ -38,17 +43,32 @@ export default function Wordle() {
 
         // Loop through each key letter in the row and change the background colour
         for(let c of element.children) {
-            c.style.cssText = "background-color: #FB4D3D";
+            // If the user clicks restart, then stop the current animation
+            if(state.current === "end") {
+                return;
+            }
+
+            c.style.cssText += "background-color: #FB4D3D";
         }
 
         // Animated shake of the whole row together
         for(let x = 0; x < 6; x++) {
+            // If the user clicks restart, then stop the current animation
+            if(state.current === "end") {
+                return;
+            }
+
             element.style.cssText = `transition: none; transform: translate(${x % 2 === 0 ? 2.5 : -2.5}px)`;
             await timer(50);
         }
 
         // Reset the background colour of each letter in the row
         for(let c of element.children) {
+            // If the user clicks restart, then stop the current animation
+            if(state.current === "end") {
+                return;
+            }
+
             c.style.cssText = "";
         }
         
@@ -63,6 +83,11 @@ export default function Wordle() {
 
         // Animated scale growth of the key letter
         for(let x = 0; x < 2; x++) {
+            // If the user clicks restart, then stop the current animation
+            if(state.current === "end") {
+                return;
+            }
+            
             element.style.cssText = `transition: 0.25s transform; transform: scale(${x === 0 ? 1.25 : 1})`;
             await timer(75);
         }
@@ -73,6 +98,13 @@ export default function Wordle() {
 
     // Function that determines the outcome when the user submits a 5-letter word
     async function enterKey () {
+        // Ignore the function if the user has won the game
+        if(state.current === "correct") {
+            return;
+        }
+
+        await timer(100);
+
         // Get the element object of the current row
         let element = document.getElementById(`row-${letter.current}`);
 
@@ -107,11 +139,22 @@ export default function Wordle() {
                 }
 
                 for(let i = 0; i < 5; i++) {
+                    // If the user clicks restart, then stop the current animation
+                    if(state.current === "end") {
+                        return;
+                    }
+
                     // Rotate animation
                     element.children[i].classList.add("rotate");
 
                     // Get class list of the keyboard letter
-                    let keyboardLetter = document.getElementById(word.current[i]).classList;
+                    let keyboardLetter = "";
+                    try {
+                        keyboardLetter = document.getElementById(word.current[i]).classList;
+                    } catch(Exception) {
+                        return;
+                    }
+                    
                     if(word.current[i] === theWord.current[i]) { // Check if current letter of user's word is in the right place
                         // Set the background of the key letter to correct (green)
                         element.children[i].classList.add("correct");
@@ -150,8 +193,8 @@ export default function Wordle() {
 
                 // Check if the user has won
                 if(correct === 5) {
-                    // Set the letter to a value outside of a-f so that they can no longer interact with the game
-                    letter.current = "z";
+                    // Set the state of the game
+                    state.current = "correct";
 
                     // Small delay before animating the key row to show that the user has won
                     await timer(200);
@@ -162,19 +205,26 @@ export default function Wordle() {
                         // Get the element object of the "lost" row
                         let lost = document.getElementById("lost");
 
+                        await timer(300);
                         lost.classList.remove("hidden");
 
                         // Set each letter in the "lost" row to the letter of the correct word
                         for(let i = 0; i < 5; i++) {
+                            // If the user clicks restart, then stop the current animation
+                            if(state.current === "end") {
+                                return;
+                            }
+
                             let c = document.getElementById(`l${i}`);
                             c.innerHTML = theWord.current[i];
                         }
 
-                        // Set the letter to a value outside of a-f so that they can no longer interact with the game
-                        letter.current = "z";
+                        // Set the state of the game
+                        state.current = "lost";
 
                         // Small delay before animating the key row to show that the user has lost
                         await timer(200);
+                        
                         
                         lost.style.cssText = "margin-top: 36.4em;";
                     } else {
@@ -188,7 +238,7 @@ export default function Wordle() {
             }
         }  else if(index.current < 4 && letters.indexOf(letter.current) < 6 && letter.current !== "z") { // Check if the user has pressed enter when they have entered less than 5 letters but still within the game
             rowShake();
-        } 
+        }
         
     }
 
@@ -198,6 +248,11 @@ export default function Wordle() {
         let element = document.getElementById(`row-${letter.current}`);
 
         for(let x = 0; x < 6; x++) {
+            // If the user clicks restart, then stop the current animation
+            if(state.current === "end") {
+                return;
+            }
+
             // Animated shake of the whole row together
             element.style.cssText = `transition: none; transform: translate(${x % 2 === 0 ? 2.5 : -2.5}px)`;
             await timer(50);
@@ -206,11 +261,79 @@ export default function Wordle() {
         // Reset the style of the key letter
         element.style.cssText = "";
     }
+
+    async function clearBoard() {
+        // Animate the removal of the 'correct answer' element if the user lost
+        if(state.current === "lost") {
+            document.getElementById("lost").style.cssText = "";
+            await timer(400);
+            document.getElementById("lost").classList.add("hidden");
+        }
+        
+        // Set the state of the game (blocks any other animations)
+        state.current = "end";
+
+        // Loop through from the last row that had entry data and clear all data
+        for(let x = letters.indexOf(letter.current); x > -1; x--) {
+            let element = document.getElementById(`row-${letters[x]}`);
+            element.style.cssText = "";
+            
+            // Clear styling from the last key letter to the first
+            for(let i = 4; i > -1; i--) {
+                // Remove rotate animation added when the user clicked enter
+                if(element.children[i].classList.contains("rotate")) {
+                    element.children[i].cssText = "transition: none";
+                    element.children[i].classList = element.children[i].classList[0];
+                    element.children[i].cssText = "";
+                }
+
+                // Small delay
+                await timer(100);
+
+                // Add class to animate the inverse rotation of the key letter
+                element.children[i].classList.add("rotateBack");
+
+                let l = document.getElementById(`${letters[x]}${i}`).innerHTML;
+                // If there is a value in the key letter box, then reset it and clear the styling on the keyboard letter
+                if(l !== "") {
+                    document.getElementById(`${letters[x]}${i}`).innerHTML = "";
+                    document.getElementById(`${l}`).classList = document.getElementById(`${l}`).classList[0];
+                }
+                
+                // Clear styling (rotateBack) on key letter
+                element.children[i].classList = element.children[i].classList[0];
+            }
+
+            // Short delay to mimick each row being cleared in turn
+            await timer(100);
+        }
+        
+        // Re-initialise the starting values
+        letter.current = letters[0];
+        index.current = -1;
+        input.current = "";
+        word.current = "";
+        state.current = "";
+    }
     //#endregion
 
     //#region Functions
+    // Function to restart the game
+    const restartGame = () => {
+        if(restart === null) {
+            setRestart(true);
+        } else {
+            setRestart(!restart);
+        }
+    }
+
     // Function to check whether the key input is a letter
     const letterKey = (key) => {
+        // Ignore the function if the user has won the game
+        if(state.current === "correct") {
+            return;
+        }
+
         // Make sure that the user is having a valid go
         if(key.match(/[a-z]/i) && index.current < 4 && letter.current !== "z") {
             // Force a re-render of the page
@@ -237,6 +360,11 @@ export default function Wordle() {
 
     // Function to delete a key letter (backspace) from a row
     const deleteKey = () => {
+        // Ignore the function if the user has won the game
+        if(state.current === "correct") {
+            return;
+        }
+
         // Make sure that the user is having a valid go
         if(index.current > -1 && letter.current !== "z") {
             // Force a re-render of the page
@@ -276,6 +404,11 @@ export default function Wordle() {
             theWord.current = words.current[Math.floor(Math.random() * words.current.length+1)];
         })
 
+        if(restart !== null) {
+            clearBoard();
+        }
+        
+
         // Function that is called whenever the user presses a key on their keyboard
         const keyPress = (e) => {
             // Exludes characters such as 'Shift', 'Control', 'Space' etc
@@ -301,7 +434,7 @@ export default function Wordle() {
         return () => {
             window.removeEventListener("keydown", keyPress);
         };
-    }, []);
+    }, [restart]);
     //#endregion
 
     // If you want to cheat and know the word xD
@@ -446,6 +579,11 @@ export default function Wordle() {
 
             {/* Guess keyboard which the user can use instead (also mobile support) */}
             <div className="keyboard">
+                <div className="keyRow">
+                    <div className="key restartKey" onClick={() => restartGame()}>
+                        <h3>RESTART</h3>
+                    </div>
+                </div>
                 <div className="keyRow">
                     <div id="q" className="key" onClick={() => letterKey("q")}>
                         <h3>Q</h3>

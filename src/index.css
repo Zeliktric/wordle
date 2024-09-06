@@ -82,6 +82,15 @@ header h1 {
     transition: transform 1s, background-color 0.5s;
 }
 
+.rotateBack {
+    transform: rotate3d(0,1, 0, 180deg);
+}
+
+
+.rotateBack h1 {
+    display: none;
+}
+
 .rotate {
     transform: rotateY(180deg);
 }
@@ -135,7 +144,7 @@ header h1 {
     align-items: center;
     gap: 0.5em;
 
-    margin-top: 10em;
+    margin-top: 7.5em;
 }
 
 .keyRow {
@@ -164,6 +173,11 @@ header h1 {
 
 .bigKey {
     width: 4.5em;
+}
+
+.restartKey {
+    width: 6.5em;
+    background-color: var(--red);
 }
 
 .key h3, h4 {
