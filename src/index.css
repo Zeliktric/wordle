@@ -57,6 +57,18 @@ header h1 {
     transition: all 0.3s;
 }
 
+#lost {
+    position: absolute;
+    margin-top: 22.9em;
+    z-index: -1;
+    transition: all 0.3s;
+    transition-delay: 300ms;
+}
+
+.hidden {
+    display: none;
+}
+
 .guessLetter {
     display: flex;
     justify-content: center;

@@ -83,10 +83,29 @@ export default function Wordle() {
             if(!words.current.includes(word.current)) {
                 errorWord();
             } else {
-                // Make a temporary variable that we will use to check for duplicate letters
+                // Temporary variable that we will use to check for duplicate letters
                 let tempWord = theWord.current;
-                let correct = 0;
                 
+
+                // Temporary variable that stores all the correct letters
+                /* 
+                    This is so that if one letter is correct but the same letter appears before that letter, then that letter won't be marked as "partial"
+                    Example: word=BARIE, guess=ARRIE
+                    Without checking for all the correct letters, the first R in ARRIE would be marked as "partial" when it should be marked as "incorrect"
+                */
+                let correctLetters = "";
+                
+                // Number of correct letters
+                let correct = 0;
+
+                // Check whether each letter is correct
+                for(let i = 0; i < 5; i++) {
+                    if(word.current[i] === theWord.current[i]) {
+                        correctLetters += word.current[i];
+                        correct++;
+                    }
+                }
+
                 for(let i = 0; i < 5; i++) {
                     // Rotate animation
                     element.children[i].classList.add("rotate");
@@ -97,12 +116,11 @@ export default function Wordle() {
                         // Set the background of the key letter to correct (green)
                         element.children[i].classList.add("correct");
                         
-                        // Remove the partial style if exists and set the background of the correct keyboard letter
+                        // Remove the incorrect and partial style if they exist and set the background of the correct keyboard letter
+                        keyboardLetter.remove("incorrect");
                         keyboardLetter.remove("partial");
                         keyboardLetter.add("correct");
-                        
-                        correct++;
-                    } else if(tempWord.includes(word.current[i])) { // Check whether the temp word contains the current letter of the user's word (allows to check for duplicate letters)
+                    } else if(tempWord.includes(word.current[i]) && !correctLetters.includes(word.current[i])) { // Check whether the temp word contains the current letter of the user's word and is also not a correct letter
                         // Set the background of the key letter to partially correct (orange)
                         element.children[i].classList.add("partial");
                         
@@ -116,9 +134,11 @@ export default function Wordle() {
                     } else { // Current letter of user's word is wrong
                         element.children[i].classList.add("incorrect");
                         
-                        // Set the background of the incorrect keyboard letter
-                        keyboardLetter.add("incorrect");
-                        
+                        // This makes sure that if a keyboard letter is correct, it won't be overwritten with incorrect
+                        // And it won't set the keyboard letter to incorrect if the letter is correct somewhere else in the word
+                        if(keyboardLetter.length === 1 && !correctLetters.includes(word.current[i])) {
+                            keyboardLetter.add("incorrect");
+                        }
                     }
 
                     // Short delay to mimick each letter being revealed in turn
@@ -138,23 +158,53 @@ export default function Wordle() {
                     element.style.cssText = "transform: scale(1.1)";
                 } else {
                     // Increment the letter row
-                    letter.current = letters[letters.indexOf(letter.current) + 1];
+                    if(letter.current === "f") {
+                        // Get the element object of the "lost" row
+                        let lost = document.getElementById("lost");
+
+                        lost.classList.remove("hidden");
+
+                        // Set each letter in the "lost" row to the letter of the correct word
+                        for(let i = 0; i < 5; i++) {
+                            let c = document.getElementById(`l${i}`);
+                            c.innerHTML = theWord.current[i];
+                        }
+
+                        // Set the letter to a value outside of a-f so that they can no longer interact with the game
+                        letter.current = "z";
+
+                        // Small delay before animating the key row to show that the user has lost
+                        await timer(200);
+                        
+                        lost.style.cssText = "margin-top: 36.4em;";
+                    } else {
+                        letter.current = letters[letters.indexOf(letter.current) + 1];
+                    }
+                    
                 }
                 
                 // Reset the row index
                 index.current = -1;
             }
-        } else if(index.current < 4 && letters.indexOf(letter.current) < 6) { // Check if the user has pressed enter when they have entered less than 5 letters but still within the game
-            for(let x = 0; x < 6; x++) {
-                // Animated shake of the whole row together
-                element.style.cssText = `transition: none; transform: translate(${x % 2 === 0 ? 2.5 : -2.5}px)`;
-                await timer(50);
-            }
-
-            // Reset the style of the key letter
-            element.style.cssText = "";
-        }
+        }  else if(index.current < 4 && letters.indexOf(letter.current) < 6 && letter.current !== "z") { // Check if the user has pressed enter when they have entered less than 5 letters but still within the game
+            rowShake();
+        } 
         
+    }
+
+    // Function to shake the current row of the guess - useful for telling the user that they can't do something
+    async function rowShake() {
+        // Get the element object of the current row
+        let element = document.getElementById(`row-${letter.current}`);
+
+        for(let x = 0; x < 6; x++) {
+            // Animated shake of the whole row together
+            element.style.cssText = `transition: none; transform: translate(${x % 2 === 0 ? 2.5 : -2.5}px)`;
+            await timer(50);
+        }
+
+        // Reset the style of the key letter
+        element.style.cssText = "";
     }
     //#endregion
 
@@ -172,6 +222,8 @@ export default function Wordle() {
             index.current++;
 
             addLetter();
+        } else if(index.current === 4) {
+            rowShake();
         }
     }
 
@@ -195,6 +247,8 @@ export default function Wordle() {
             input.current = "";
 
             rmvLetter();
+        } else if(index.current === -1) {
+            rowShake();
         }
         
     }
@@ -251,7 +305,7 @@ export default function Wordle() {
     //#endregion
 
     // If you want to cheat and know the word xD
-    // console.log(theWord.current);
+    console.log(theWord.current);
 
     //#region HTML (JSX)
     return <>
@@ -368,6 +422,24 @@ export default function Wordle() {
                     </div>
                     <div className="guessLetter">
                         <h1 id="f4"></h1> 
+                    </div>
+                </div>
+
+                <div id="lost" className="guessRow hidden">
+                    <div className="guessLetter correct">
+                        <h1 id="l0"></h1>
+                    </div>
+                    <div className="guessLetter correct">
+                        <h1 id="l1"></h1>
+                    </div>
+                    <div className="guessLetter correct">
+                        <h1 id="l2"></h1>
+                    </div>
+                    <div className="guessLetter correct">
+                        <h1 id="l3"></h1>
+                    </div>
+                    <div className="guessLetter correct">
+                        <h1 id="l4"></h1> 
                     </div>
                 </div>
             </div>
