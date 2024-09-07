@@ -59,10 +59,26 @@ header h1 {
 
 #lost {
     position: absolute;
-    margin-top: 22.9em;
+    margin-top: 17.9em;
     z-index: -1;
     transition: all 0.3s;
     transition-delay: 300ms;
+}
+
+@media only screen and (min-width: 1024px) {
+    #lost {
+        margin-top: 22.9em;
+    }
+}
+
+.show {
+    margin-top: 27.1em !important;
+}
+
+@media only screen and (min-width: 1024px) {
+    .show {
+        margin-top: 34.1em !important;
+    }
 }
 
 .hidden {
@@ -74,12 +90,19 @@ header h1 {
     justify-content: center;
     align-items: center;
     border: 1px solid var(--grey);
-    width: 4em;
-    height: 4em;
+    width: 3em;
+    height: 3em;
 
     text-align: center;
     color: white;
     transition: transform 1s, background-color 0.5s;
+}
+
+@media only screen and (min-width: 1024px) {
+    .guessLetter {
+        width: 4em;
+        height: 4em;
+    }
 }
 
 .rotateBack {
@@ -110,29 +133,51 @@ header h1 {
 .correct {
     background-color: var(--green) !important;
     border: none;
-    width: 4.083125em;
-    height: 4.083125em;
+    width: 3.0835em;
+    height: 3.0835em;
 }
 
 .partial {
     background-color: var(--orange) !important;
     border: none;
-    width: 4.083125em;
-    height: 4.083125em;
+    width: 3.0835em;
+    height: 3.0835em;
 }
 
 .incorrect {
     background-color: var(--dark-grey) !important;
     border: none;
-    width: 4.083125em;
-    height: 4.083125em;
+    width: 3.0835em;
+    height: 3.0835em;
 }
 
 .error {
     background-color: var(--red) !important;
     border: none;
-    width: 4.083125em;
-    height: 4.083125em;
+    width: 3.0835em;
+    height: 3.0835em;
+}
+
+@media only screen and (min-width: 1024px) {
+    .correct {
+        width: 4.0835em;
+        height: 4.0835em;
+    }
+    
+    .partial {
+        width: 4.0835em;
+        height: 4.0835em;
+    }
+    
+    .incorrect {
+        width: 4.0835em;
+        height: 4.0835em;
+    }
+    
+    .error {
+        width: 4.0835em;
+        height: 4.0835em;
+    }
 }
 
 /*########## GUESS KEYBOARD ##########*/
@@ -142,14 +187,26 @@ header h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 0.5em;
+    gap: 0.25em;
 
     margin-top: 7.5em;
 }
 
+@media only screen and (min-width: 1024px) {
+    .keyboard {
+        gap: 0.5em
+    }
+}
+
 .keyRow {
     display: flex;
-    gap: 0.5em;
+    gap: 0.25em;
+}
+
+@media only screen and (min-width: 1024px) {
+    .keyRow {
+        gap: 0.5em
+    }
 }
 
 .key {
@@ -158,21 +215,47 @@ header h1 {
     align-items: center;
     background-color: var(--grey);
     border-radius: 0.25em;
-    width: 3em;
-    height: 3.5em;
+    
+    width: 1.72em;
+    height: 2em;
 
     text-align: center;
     color: white;
     transition: all 0.1s;
 }
 
-.key:hover {
+@media only screen and (min-width: 425px) {
+    .key {
+        width: 2.4em;
+        height: 2.8em;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .key {
+        width: 3em;
+        height: 3.5em;
+    }
+
+    .key:hover {
+        transform: scale(1.1);
+        cursor: pointer;
+    }
+}
+
+.key:active {
     transform: scale(1.1);
     cursor: pointer;
 }
 
 .bigKey {
-    width: 4.5em;
+    width: 3em;
+}
+
+@media only screen and (min-width: 600px) {
+    .bigKey {
+        width: 4.5em;
+    }
 }
 
 .restartKey {
@@ -186,6 +269,22 @@ header h1 {
     margin: 0;
 }
 
+.key h4 {
+    font-size: 0.8em;
+}
+
+@media only screen and (min-width: 600px) {
+    .key h4 {
+        font-size: 1em;
+    }
+}
+
 .icon {
-    font-size: 1.5em;
+    font-size: 1.25em;
+}
+
+@media only screen and (min-width: 600px) {
+    .icon {
+        font-size: 1.5em;
+    }
 }

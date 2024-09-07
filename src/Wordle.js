@@ -226,7 +226,8 @@ export default function Wordle() {
                         await timer(200);
                         
                         
-                        lost.style.cssText = "margin-top: 36.4em;";
+                        //lost.style.cssText = "margin-top: 36.4em;";
+                        lost.classList.add("show");
                     } else {
                         letter.current = letters[letters.indexOf(letter.current) + 1];
                     }
@@ -265,7 +266,7 @@ export default function Wordle() {
     async function clearBoard() {
         // Animate the removal of the 'correct answer' element if the user lost
         if(state.current === "lost") {
-            document.getElementById("lost").style.cssText = "";
+            document.getElementById("lost").classList = document.getElementById("lost").classList[0];
             await timer(400);
             document.getElementById("lost").classList.add("hidden");
         }
