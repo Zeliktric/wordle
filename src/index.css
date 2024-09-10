@@ -30,6 +30,7 @@ header {
 header h1 {
     padding: 0 1em;
     border-bottom: 1px solid var(--grey);
+    margin-top: 0;
 }
 
 /* Disables user selection (when you click and drag over text) for everything but the header */
@@ -259,8 +260,13 @@ header h1 {
 }
 
 .restartKey {
-    width: 6.5em;
+    width: 8.5em;
     background-color: var(--red);
+}
+
+.scoreKey {
+    width: 8.5em;
+    background-color: var(--green);
 }
 
 .key h3, h4 {

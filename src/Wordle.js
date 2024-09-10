@@ -30,6 +30,10 @@ export default function Wordle() {
 
     // The current state of the game
     let state = useRef("");
+
+    // The user's score and attempts
+    let score = useRef(0);
+    let attempts = useRef(0);
     //#endregion
     
     // Sleep/delay function
@@ -98,8 +102,8 @@ export default function Wordle() {
 
     // Function that determines the outcome when the user submits a 5-letter word
     async function enterKey () {
-        // Ignore the function if the user has won the game
-        if(state.current === "correct") {
+        // Ignore the function if the state is not empty
+        if(state.current !== "") {
             return;
         }
 
@@ -195,10 +199,16 @@ export default function Wordle() {
                 if(correct === 5) {
                     // Set the state of the game
                     state.current = "correct";
+                    
+                    // Increment the user's score
+                    score.current++;
 
                     // Small delay before animating the key row to show that the user has won
                     await timer(200);
                     element.style.cssText = "transform: scale(1.1)";
+
+                    // Increment the user's attempts
+                    attempts.current++;
                 } else {
                     // Increment the letter row
                     if(letter.current === "f") {
@@ -225,9 +235,11 @@ export default function Wordle() {
                         // Small delay before animating the key row to show that the user has lost
                         await timer(200);
                         
-                        
                         //lost.style.cssText = "margin-top: 36.4em;";
                         lost.classList.add("show");
+                        
+                        // Increment the user's attempts
+                        attempts.current++;
                     } else {
                         letter.current = letters[letters.indexOf(letter.current) + 1];
                     }
@@ -235,7 +247,12 @@ export default function Wordle() {
                 }
                 
                 // Reset the row index
-                index.current = -1;
+                index.current = -1;       
+                
+                // Force a re-render of the page so that score gets updated at the end of the round
+                if(state.current === "correct" || state.current === "lost") {
+                    setReRender(-1);
+                }
             }
         }  else if(index.current < 4 && letters.indexOf(letter.current) < 6 && letter.current !== "z") { // Check if the user has pressed enter when they have entered less than 5 letters but still within the game
             rowShake();
@@ -330,8 +347,8 @@ export default function Wordle() {
 
     // Function to check whether the key input is a letter
     const letterKey = (key) => {
-        // Ignore the function if the user has won the game
-        if(state.current === "correct") {
+        // Ignore the function if the state is not empty
+        if(state.current !== "") {
             return;
         }
 
@@ -361,8 +378,8 @@ export default function Wordle() {
 
     // Function to delete a key letter (backspace) from a row
     const deleteKey = () => {
-        // Ignore the function if the user has won the game
-        if(state.current === "correct") {
+        // Ignore the function if the state is not empty
+        if(state.current !== "") {
             return;
         }
 
@@ -394,21 +411,26 @@ export default function Wordle() {
     //#region Hooks
     // Hook that is ran at the start of a page reload. Used to initialise variables and listeners
     useEffect(() => {
-        // Get the word list
-        fetch(require("./words.txt"))
-        .then((response) => response.text())
-        .then((text) => {
-            // Convert the string to an array
-            words.current = text.split("\r\n");
+        // Get the word list if it hasn't been initialised
+        if(words.current.length === 0) {
+            fetch(require("./words.txt"))
+            .then((response) => response.text())
+            .then((text) => {
+                // Convert the string to an array
+                words.current = text.split("\r\n");
 
+                // Choose the random word from the array
+                theWord.current = words.current[Math.floor(Math.random() * words.current.length+1)];
+            })
+        } else {
             // Choose the random word from the array
             theWord.current = words.current[Math.floor(Math.random() * words.current.length+1)];
-        })
+        }
+        
 
         if(restart !== null) {
             clearBoard();
         }
-        
 
         // Function that is called whenever the user presses a key on their keyboard
         const keyPress = (e) => {
@@ -581,8 +603,11 @@ export default function Wordle() {
             {/* Guess keyboard which the user can use instead (also mobile support) */}
             <div className="keyboard">
                 <div className="keyRow">
+                    <div className="key scoreKey">
+                        <h3>SCORE: {score.current} / {attempts.current}</h3>
+                    </div>
                     <div className="key restartKey" onClick={() => restartGame()}>
-                        <h3>RESTART</h3>
+                        <h3>PLAY AGAIN</h3>
                     </div>
                 </div>
                 <div className="keyRow">
