@@ -420,11 +420,11 @@ export default function Wordle() {
                 words.current = text.split("\r\n");
 
                 // Choose the random word from the array
-                theWord.current = words.current[Math.floor(Math.random() * words.current.length+1)];
+                theWord.current = words.current[Math.floor(Math.random() * words.current.length)];
             })
         } else {
             // Choose the random word from the array
-            theWord.current = words.current[Math.floor(Math.random() * words.current.length+1)];
+            theWord.current = words.current[Math.floor(Math.random() * words.current.length)];
         }
         
 
