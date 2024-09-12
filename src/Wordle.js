@@ -417,7 +417,7 @@ export default function Wordle() {
             .then((response) => response.text())
             .then((text) => {
                 // Convert the string to an array
-                words.current = text.split("\r\n");
+                words.current = text.split("\n");
 
                 // Choose the random word from the array
                 theWord.current = words.current[Math.floor(Math.random() * words.current.length)];
