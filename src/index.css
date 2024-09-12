@@ -195,7 +195,10 @@ header h1 {
 
 @media only screen and (min-width: 1024px) {
     .keyboard {
-        gap: 0.5em
+        gap: 0.5em;
+        position: absolute;
+        bottom: 1em;
+        width: 100%;
     }
 }
 
